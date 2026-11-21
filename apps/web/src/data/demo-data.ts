@@ -2,10 +2,19 @@ import type { GeoPoint } from "@onit/core";
 
 export type NavTab =
   | "dispatch"
+  | "calendar"
   | "simulator"
   | "pricing"
   | "routes"
   | "analytics";
+
+export type DefectPhotoKind =
+  | "frost_pipe"
+  | "drain_leak"
+  | "coil_dirt"
+  | "pcb_burn";
+
+export type CardTone = "ochre" | "lavender" | "slate" | "rose" | "teal";
 
 export interface DemoJob {
   id: string;
@@ -22,11 +31,20 @@ export interface DemoJob {
   priceRange: string;
   durationMin: number;
   slotTime: string;
-  startCol: number; // 0..9 across timeline
-  spanCols: number; // width in columns
+  endTime?: string;
+  etaMinutes?: number;
+  startCol: number;
+  spanCols: number;
   highlighted?: boolean;
   location: GeoPoint;
   defectSummary: string;
+  equipmentModelId?: string;
+  photoKind?: DefectPhotoKind;
+  cardTone?: CardTone;
+  channel?: "whatsapp" | "telegram";
+  voiceLangBadge?: string;
+  voiceDuration?: string;
+  floorLabel?: string;
 }
 
 export type AvatarKey = "aram" | "davit" | "hayk" | "suren" | "ani" | "elena";
@@ -35,19 +53,60 @@ export const AVATAR_STYLES: Record<
   AvatarKey,
   { initials: string; bg: string; fg: string; ring: string }
 > = {
-  aram: { initials: "AR", bg: "#1F2937", fg: "#D1F366", ring: "#FFFFFF" },
-  davit: { initials: "DV", bg: "#374151", fg: "#85E6DC", ring: "#FFFFFF" },
-  hayk: { initials: "HK", bg: "#0F172A", fg: "#F8FAFC", ring: "#FFFFFF" },
-  suren: { initials: "SR", bg: "#3F4E4F", fg: "#ECF9B2", ring: "#FFFFFF" },
-  ani: { initials: "AN", bg: "#E0F2FE", fg: "#0F172A", ring: "#FFFFFF" },
-  elena: { initials: "EL", bg: "#FEF3C7", fg: "#1F2937", ring: "#FFFFFF" },
+  aram: { initials: "AR", bg: "#1E1C1A", fg: "#E5BC73", ring: "#FFFFFF" },
+  davit: { initials: "DV", bg: "#2F3A3D", fg: "#A6CBC9", ring: "#FFFFFF" },
+  hayk: { initials: "HK", bg: "#2B253A", fg: "#D5CFE8", ring: "#FFFFFF" },
+  suren: { initials: "SR", bg: "#462A30", fg: "#E8C5CB", ring: "#FFFFFF" },
+  ani: { initials: "AN", bg: "#F4E5C7", fg: "#1E1A14", ring: "#FFFFFF" },
+  elena: { initials: "EL", bg: "#DFE8E7", fg: "#162A29", ring: "#FFFFFF" },
+};
+
+export const CARD_TONE_STYLES: Record<
+  CardTone,
+  { bg: string; pillBg: string; pillText: string; ink: string; muted: string }
+> = {
+  ochre: {
+    bg: "#E5BC73",
+    pillBg: "#6B4C1B",
+    pillText: "#FFFFFF",
+    ink: "#1E1A14",
+    muted: "rgba(30,26,20,0.68)",
+  },
+  slate: {
+    bg: "#BCC6C8",
+    pillBg: "#374143",
+    pillText: "#FFFFFF",
+    ink: "#161B1D",
+    muted: "rgba(22,27,29,0.65)",
+  },
+  lavender: {
+    bg: "#BEB7D4",
+    pillBg: "#473E66",
+    pillText: "#FFFFFF",
+    ink: "#1B1726",
+    muted: "rgba(27,23,38,0.65)",
+  },
+  rose: {
+    bg: "#CCA2A9",
+    pillBg: "#62323A",
+    pillText: "#FFFFFF",
+    ink: "#231417",
+    muted: "rgba(35,20,23,0.65)",
+  },
+  teal: {
+    bg: "#A7CCC9",
+    pillBg: "#1F5753",
+    pillText: "#FFFFFF",
+    ink: "#122423",
+    muted: "rgba(18,36,35,0.65)",
+  },
 };
 
 export const INITIAL_JOBS: DemoJob[] = [
   {
     id: "lead_104",
-    title: "Freon + Drain Clean",
-    subtitle: "75m · 18k–22k AMD",
+    title: "Заправка фреоном + дренаж",
+    subtitle: "75м · 18–22k AMD",
     district: "Kentron",
     address: "ул. Туманяна 15, кв. 8",
     clientName: "Ани С.",
@@ -59,17 +118,58 @@ export const INITIAL_JOBS: DemoJob[] = [
     priceRange: "18 000 – 22 000 AMD",
     durationMin: 75,
     slotTime: "11:30",
+    endTime: "12:45",
+    etaMinutes: 6,
     startCol: 4.5,
     spanCols: 4.3,
+    highlighted: true,
     location: { lat: 40.1811, lng: 44.5136 },
-    defectSummary: "Сплит-система 12000 BTU плохо холодит и капает дренаж. Доступ с балкона есть, 2 этаж.",
+    defectSummary:
+      "Сплит-система 12000 BTU обмерзает на трубке и капает дренаж. Доступ с балкона есть, 2 этаж.",
+    equipmentModelId: "lg_dualcool_s12eq",
+    photoKind: "frost_pipe",
+    cardTone: "ochre",
+    channel: "whatsapp",
+    voiceLangBadge: "HY → RU",
+    voiceDuration: "0:14",
+    floorLabel: "2 этаж · с балкона",
+  },
+  {
+    id: "lead_107",
+    title: "Плата инвертора (HITL)",
+    subtitle: "Пауза · нужна оценка",
+    district: "Avan",
+    address: "ул. Ачаряна 14, кв. 31",
+    clientName: "Давид Г.",
+    clientPhone: "+374 77 318-505",
+    technician: "Hayk",
+    avatarKey: "hayk",
+    status: "hitl",
+    confidence: 55,
+    priceRange: "Нужна оценка",
+    durationMin: 90,
+    slotTime: "HITL",
+    endTime: "10 мин SLA",
+    etaMinutes: 14,
+    startCol: 1.9,
+    spanCols: 4.1,
+    location: { lat: 40.2144, lng: 44.5681 },
+    defectSummary:
+      "Запах гари из наружного блока Daikin, выбивает автомат при запуске компрессора. Confidence 0.55 < 0.80 — ждёт мастера.",
+    equipmentModelId: "daikin_sensira_35",
+    photoKind: "pcb_burn",
+    cardTone: "rose",
+    channel: "whatsapp",
+    voiceLangBadge: "RU → HITL",
+    voiceDuration: "0:11",
+    floorLabel: "4 этаж · есть лифт",
   },
   {
     id: "lead_105",
-    title: "Split Maintenance",
-    subtitle: "60m · 15k–18k AMD",
+    title: "Полная профилактика сплит",
+    subtitle: "60м · 15–18k AMD",
     district: "Arabkir",
-    address: "пр. Комитаса 42",
+    address: "пр. Комитаса 42, кв. 19",
     clientName: "Елена К.",
     clientPhone: "+374 93 771-902",
     technician: "Davit",
@@ -78,19 +178,28 @@ export const INITIAL_JOBS: DemoJob[] = [
     confidence: 96,
     priceRange: "15 000 – 18 000 AMD",
     durationMin: 60,
-    slotTime: "13:00",
+    slotTime: "13:15",
+    endTime: "14:15",
+    etaMinutes: 9,
     startCol: 1.1,
     spanCols: 3.9,
-    highlighted: true,
     location: { lat: 40.2038, lng: 44.5152 },
-    defectSummary: "Плановая чистка и мойка внутреннего и наружного блоков перед сезоном.",
+    defectSummary:
+      "Загрязнение теплообменника и крыльчатки, слабый поток воздуха. Нужна мойка высокого давления перед сезоном.",
+    equipmentModelId: "midea_mission_12",
+    photoKind: "coil_dirt",
+    cardTone: "lavender",
+    channel: "telegram",
+    voiceLangBadge: "RU",
+    voiceDuration: "0:18",
+    floorLabel: "3 этаж · балкон",
   },
   {
     id: "lead_106",
-    title: "Drainage Flush",
-    subtitle: "30m · 10k AMD",
+    title: "Промывка дренажа Gree",
+    subtitle: "30м · 10k AMD",
     district: "Kentron",
-    address: "ул. Абовяна 22",
+    address: "ул. Абовяна 22, офис 4",
     clientName: "Армен М.",
     clientPhone: "+374 99 440-128",
     technician: "Aram",
@@ -100,30 +209,73 @@ export const INITIAL_JOBS: DemoJob[] = [
     priceRange: "10 000 AMD",
     durationMin: 30,
     slotTime: "15:30",
+    endTime: "16:00",
+    etaMinutes: 5,
     startCol: 3.2,
     spanCols: 3.6,
     location: { lat: 40.1845, lng: 44.5189 },
-    defectSummary: "Забит дренаж внутреннего блока LG, сработало правило минимального заказа 10 000 AMD.",
+    defectSummary:
+      "Капает вода из внутреннего блока прямо на стену. Сработало правило минимального заказа 10 000 AMD.",
+    equipmentModelId: "gree_bora_09",
+    photoKind: "drain_leak",
+    cardTone: "teal",
+    channel: "whatsapp",
+    voiceLangBadge: "HY → RU",
+    voiceDuration: "0:09",
+    floorLabel: "1 этаж · офис",
+  },
+];
+
+export const CALENDAR_DAYS_PREVIEW: Array<{
+  dayName: string;
+  dayNum: string;
+  monthShort: string;
+  tone: CardTone;
+  slots: Array<{ hour: string; jobId?: string; label?: string }>;
+}> = [
+  {
+    dayName: "Вторник",
+    dayNum: "14",
+    monthShort: "АПР",
+    tone: "lavender",
+    slots: [
+      { hour: "11:30", jobId: "lead_104", label: "Фреон + дренаж" },
+      { hour: "13:15", jobId: "lead_105", label: "ТО Сплит" },
+      { hour: "15:30", jobId: "lead_106", label: "Дренаж Gree" },
+    ],
   },
   {
-    id: "lead_107",
-    title: "Inverter PCB (HITL)",
-    subtitle: "Paused · Master check",
-    district: "Avan",
-    address: "ул. Ачаряна 14",
-    clientName: "Давид Г.",
-    clientPhone: "+374 77 318-505",
-    technician: "Hayk",
-    avatarKey: "hayk",
-    status: "hitl",
-    confidence: 55,
-    priceRange: "Ожидает мастера",
-    durationMin: 90,
-    slotTime: "HITL",
-    startCol: 1.9,
-    spanCols: 4.1,
-    location: { lat: 40.2144, lng: 44.5681 },
-    defectSummary: "Запах гари из наружного блока, confidence 0.55 < 0.80 — автоответ на паузе, ждём голос мастера.",
+    dayName: "Среда",
+    dayNum: "15",
+    monthShort: "АПР",
+    tone: "rose",
+    slots: [
+      { hour: "10:00", jobId: "lead_107", label: "Daikin HITL" },
+      { hour: "12:30" },
+      { hour: "15:00", label: "ТО Samsung" },
+    ],
+  },
+  {
+    dayName: "Четверг",
+    dayNum: "16",
+    monthShort: "АПР",
+    tone: "teal",
+    slots: [
+      { hour: "09:30" },
+      { hour: "11:00", label: "Заправка R32" },
+      { hour: "14:00" },
+    ],
+  },
+  {
+    dayName: "Пятница",
+    dayNum: "17",
+    monthShort: "АПР",
+    tone: "ochre",
+    slots: [
+      { hour: "10:00", label: "Плата Avan" },
+      { hour: "13:00" },
+      { hour: "16:00" },
+    ],
   },
 ];
 
@@ -152,8 +304,8 @@ export const VOICE_CLIPS = [
     duration: "0:11",
     client: "Davit · Avan",
     original: "«Пошёл запах гари из наружного блока, выбивает автомат при включении»",
-    masterBrief: "Эскалация мастеру (confidence 0.54): возможен пробой платы/компрессора",
-    confidence: 0.54,
+    masterBrief: "Эскалация мастеру (confidence 0.55): возможен пробой платы Daikin",
+    confidence: 0.55,
   },
 ];
 

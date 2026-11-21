@@ -188,17 +188,17 @@ export function RightRail({
         </div>
       </div>
 
-      {/* Card 2: Acid Lime Dispatch History Calendar */}
-      <div className="rounded-[26px] bg-[#D1F366] p-4 shadow-[0_12px_30px_rgba(209,243,102,0.34)] flex flex-col gap-3">
+      {/* Card 2: Warm Ochre Dispatch History Calendar */}
+      <div className="rounded-[26px] bg-[#E5BC73] p-4 shadow-[0_12px_28px_rgba(107,76,27,0.16)] flex flex-col gap-3">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-1.5">
-              <Zap className="w-4 h-4 fill-[#111214] text-[#111214]" />
-              <span className="text-[15px] font-extrabold tracking-tight text-[#111214]">
+              <Zap className="w-4 h-4 fill-[#141517] text-[#141517]" />
+              <span className="text-[15px] font-extrabold tracking-tight text-[#1E1A14]">
                 History
               </span>
             </div>
-            <div className="text-[11px] font-medium text-[#3F4A1E]">
+            <div className="text-[11px] font-medium text-[#5A441F]">
               Booked Working Days
             </div>
           </div>
@@ -206,7 +206,7 @@ export function RightRail({
             type="button"
             onClick={() => onNavigate("routes")}
             aria-label="Open Geo Routes"
-            className="w-7 h-7 rounded-full border border-black/20 flex items-center justify-center text-[#111214] hover:bg-black/5 cursor-pointer"
+            className="w-7 h-7 rounded-full border border-black/20 flex items-center justify-center text-[#1E1A14] hover:bg-black/5 cursor-pointer"
           >
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
@@ -223,8 +223,8 @@ export function RightRail({
                 onClick={() => setSelectedTech(name)}
                 className={`px-2.5 py-1 rounded-full text-[10.5px] font-semibold transition-all cursor-pointer ${
                   active
-                    ? "bg-[#111214] text-white"
-                    : "border border-black/35 text-[#111214] hover:bg-black/5"
+                    ? "bg-[#141517] text-white"
+                    : "border border-black/30 text-[#1E1A14] hover:bg-black/5"
                 }`}
               >
                 {name}
@@ -235,14 +235,13 @@ export function RightRail({
 
         {/* Circular Calendar Grid */}
         <div>
-          <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-[#3F4A1E] mb-1.5">
+          <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-[#5A441F] mb-1.5">
             {WEEKDAYS.map((w, i) => (
               <span key={i}>{w}</span>
             ))}
           </div>
 
           <div className="grid grid-cols-7 gap-1.5">
-            {/* 5 leading dashed empty slots matching reference */}
             {[0, 1, 2, 3, 4].map((empty) => (
               <span
                 key={`e-${empty}`}
@@ -261,9 +260,9 @@ export function RightRail({
                   onClick={() => setSelectedDay(day)}
                   className={`w-8 h-8 mx-auto rounded-full text-[11px] font-bold tabular-nums flex items-center justify-center transition-all cursor-pointer ${
                     isBooked
-                      ? "bg-[#111214] text-white shadow-xs"
-                      : "bg-[#EFFAA8] text-[#111214] hover:bg-[#E5F688]"
-                  } ${isPicked ? "ring-2 ring-white ring-offset-1 ring-offset-[#D1F366]" : ""}`}
+                      ? "bg-[#141517] text-white shadow-xs"
+                      : "bg-[#F4DFB4] text-[#1E1A14] hover:bg-[#EED297]"
+                  } ${isPicked ? "ring-2 ring-white ring-offset-1 ring-offset-[#E5BC73]" : ""}`}
                 >
                   {day}
                 </button>

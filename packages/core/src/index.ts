@@ -15,3 +15,4 @@ export * from "./hitl/active-learning.js";
 export * from "./channels/telegram-control.js";
 export * from "./channels/whatsapp-cloud.js";
 export * from "./calendar/google-calendar.js";
+export * from "./catalogs/reference-catalogs.js";
