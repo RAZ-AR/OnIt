@@ -46,10 +46,12 @@ import {
   type CardTone,
   type DemoJob,
 } from "../data/demo-data";
+import { getUiStrings } from "../i18n/ui-strings";
 import { AccountSettingsView } from "./AccountSettingsView";
 import { AvatarCircle } from "./Avatars";
 import { DefectPhotoCard } from "./DefectPhotoCard";
 import { InvoiceSheet } from "./InvoiceSheet";
+import { LanguagePill } from "./LanguagePill";
 import { MenuBuilderView } from "./MenuBuilderView";
 import { NewOrderSheet } from "./NewOrderSheet";
 
@@ -74,6 +76,7 @@ export function TelegramMiniAppSurface({
     addJob,
     matrix,
     setMatrix,
+    settings,
     acceptJob,
     takeoverJob,
     completeJob,
@@ -113,6 +116,8 @@ export function TelegramMiniAppSurface({
   const [flowReminderEnabled, setFlowReminderEnabled] = useState(true);
   const [flowReviewEnabled, setFlowReviewEnabled] = useState(true);
   const [zones, setZones] = useState<string[]>(["Kentron", "Arabkir", "Avan"]);
+
+  const t = getUiStrings(settings.masterLanguage);
 
   const openJob = useMemo(
     () => jobs.find((j) => j.id === openJobId) ?? null,
@@ -222,39 +227,42 @@ export function TelegramMiniAppSurface({
         </div>
       ) : (
         <div className="bg-[#E7E8E3] px-4 pt-4 pb-2 flex items-center justify-between gap-2 shrink-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setTab("today")}
-              className={`px-4 py-2 rounded-full text-[12.5px] font-bold transition-all cursor-pointer ${
+              className={`px-3.5 py-2 rounded-full text-[12px] font-bold transition-all cursor-pointer ${
                 tab === "today"
                   ? "bg-[#141517] text-white shadow-xs"
                   : "border border-black/20 text-[#141517] hover:bg-black/5"
               }`}
             >
-              Сегодня
+              {t.hero.todayPill}
             </button>
             <button
               type="button"
               onClick={() => setTab("calendar")}
-              className={`px-4 py-2 rounded-full text-[12.5px] font-bold transition-all cursor-pointer ${
+              className={`px-3.5 py-2 rounded-full text-[12px] font-bold transition-all cursor-pointer ${
                 tab === "calendar"
                   ? "bg-[#141517] text-white shadow-xs"
                   : "border border-black/20 text-[#141517] hover:bg-black/5"
               }`}
             >
-              Календарь
+              {t.hero.calendarPill}
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setNewOrderSlot("16:30")}
-            aria-label="Create new order"
-            className="w-10 h-10 rounded-full bg-black/[0.08] hover:bg-black/[0.14] text-[#141517] flex items-center justify-center transition-colors cursor-pointer"
-          >
-            <Plus className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <LanguagePill compact />
+            <button
+              type="button"
+              onClick={() => setNewOrderSlot("16:30")}
+              aria-label="Create new order"
+              className="w-10 h-10 rounded-full bg-black/[0.08] hover:bg-black/[0.14] text-[#141517] flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       )}
 
@@ -970,10 +978,10 @@ export function TelegramMiniAppSurface({
           >
             {(
               [
-                { id: "today", label: "Сегодня", icon: Home, dot: false },
-                { id: "calendar", label: "Календарь", icon: Calendar, dot: false },
-                { id: "flows", label: "AI Флоу", icon: GitBranch, dot: hitlPending > 0 },
-                { id: "pricing", label: "Кабинет", icon: Wallet, dot: false },
+                { id: "today", label: t.nav.today, icon: Home, dot: false },
+                { id: "calendar", label: t.nav.calendar, icon: Calendar, dot: false },
+                { id: "flows", label: t.nav.aiFlow, icon: GitBranch, dot: hitlPending > 0 },
+                { id: "pricing", label: t.nav.account, icon: Wallet, dot: false },
               ] as const
             ).map((item) => {
               const Icon = item.icon;

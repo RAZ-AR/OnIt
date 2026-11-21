@@ -16,7 +16,9 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
+import { useOnItStore } from "../context/OnItStore";
 import type { NavTab } from "../data/demo-data";
+import { getUiStrings } from "../i18n/ui-strings";
 import { AvatarCircle } from "./Avatars";
 
 export interface ChatBubble {
@@ -39,17 +41,17 @@ interface SidebarColumnProps {
 
 const NAV_ITEMS: Array<{
   id: NavTab | "team";
-  label: string;
+  key: "today" | "calendar" | "simulator" | "menu" | "routes" | "analytics" | "teamHitl";
   icon: React.ComponentType<{ className?: string }>;
   target: NavTab;
 }> = [
-  { id: "dispatch", label: "Сегодня", icon: Home, target: "dispatch" },
-  { id: "calendar", label: "Календарь", icon: Calendar, target: "calendar" },
-  { id: "simulator", label: "AI Симулятор", icon: Sparkles, target: "simulator" },
-  { id: "pricing", label: "Меню услуг", icon: FileSpreadsheet, target: "pricing" },
-  { id: "routes", label: "Маршруты", icon: Compass, target: "routes" },
-  { id: "analytics", label: "Аналитика", icon: BarChart3, target: "analytics" },
-  { id: "team", label: "Команда и HITL", icon: Users, target: "analytics" },
+  { id: "dispatch", key: "today", icon: Home, target: "dispatch" },
+  { id: "calendar", key: "calendar", icon: Calendar, target: "calendar" },
+  { id: "simulator", key: "simulator", icon: Sparkles, target: "simulator" },
+  { id: "pricing", key: "menu", icon: FileSpreadsheet, target: "pricing" },
+  { id: "routes", key: "routes", icon: Compass, target: "routes" },
+  { id: "analytics", key: "analytics", icon: BarChart3, target: "analytics" },
+  { id: "team", key: "teamHitl", icon: Users, target: "analytics" },
 ];
 
 const QUICK_SAMPLE_PROMPTS = [
@@ -66,6 +68,8 @@ export function SidebarColumn({
   onSendChat,
   isBusy,
 }: SidebarColumnProps) {
+  const { settings } = useOnItStore();
+  const t = getUiStrings(settings.masterLanguage);
   const [draft, setDraft] = useState("");
   const [sampleIdx, setSampleIdx] = useState(0);
 
@@ -124,7 +128,7 @@ export function SidebarColumn({
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
-                <span className="truncate">{item.label}</span>
+                <span className="truncate">{t.nav[item.key]}</span>
               </button>
             );
           })}
@@ -138,7 +142,7 @@ export function SidebarColumn({
             }`}
           >
             <Settings className="w-4 h-4 shrink-0" />
-            <span className="truncate">Кабинет</span>
+            <span className="truncate">{t.nav.account}</span>
           </button>
         </nav>
       </div>

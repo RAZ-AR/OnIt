@@ -10,6 +10,7 @@ import {
 import { useOnItStore, type SurfaceMode } from "../context/OnItStore";
 import { ClientWhatsAppSurface } from "./ClientWhatsAppSurface";
 import { LandingSurface } from "./LandingSurface";
+import { LanguagePill } from "./LanguagePill";
 import { OnItDashboard } from "./OnItDashboard";
 import { TelegramMiniAppSurface } from "./TelegramMiniAppSurface";
 
@@ -63,9 +64,12 @@ export function PrototypeShell() {
           })}
         </div>
 
-        <div className="hidden md:flex items-center gap-2 text-[11px] font-semibold text-[#4D5259] bg-white/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white">
-          <span className="w-2 h-2 rounded-full bg-[#22C55E]" />
-          Live Sync: WhatsApp ⇄ Telegram Mini App ⇄ Web Hub (@onit/core)
+        <div className="flex items-center gap-2 flex-wrap">
+          <LanguagePill />
+          <div className="hidden xl:flex items-center gap-2 text-[11px] font-semibold text-[#4D5259] bg-white/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white">
+            <span className="w-2 h-2 rounded-full bg-[#22C55E]" />
+            Live Sync (@onit/core)
+          </div>
         </div>
       </div>
 

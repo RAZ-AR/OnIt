@@ -27,6 +27,7 @@ import {
   Wrench,
   Zap,
 } from "lucide-react";
+import { useOnItStore } from "../context/OnItStore";
 import {
   CALENDAR_DAYS_PREVIEW,
   CARD_TONE_STYLES,
@@ -34,6 +35,7 @@ import {
   type DemoJob,
   type NavTab,
 } from "../data/demo-data";
+import { getUiStrings } from "../i18n/ui-strings";
 import { AvatarCircle } from "./Avatars";
 import { DefectPhotoCard } from "./DefectPhotoCard";
 
@@ -98,6 +100,8 @@ export function CenterBento({
   onOpenMiniApp,
   onNavigate,
 }: CenterBentoProps) {
+  const { settings } = useOnItStore();
+  const t = getUiStrings(settings.masterLanguage);
   const [period, setPeriod] = useState<"7d" | "30d">("30d");
 
   const bookedCount = jobs.filter((j) => j.status === "booked").length;
@@ -136,7 +140,7 @@ export function CenterBento({
                   : "border border-black/20 text-[#141517] hover:bg-black/5"
               }`}
             >
-              Сегодня
+              {t.hero.todayPill}
             </button>
             <button
               type="button"
@@ -147,7 +151,7 @@ export function CenterBento({
                   : "border border-black/20 text-[#141517] hover:bg-black/5"
               }`}
             >
-              Календарь
+              {t.hero.calendarPill}
             </button>
           </div>
 
@@ -155,8 +159,8 @@ export function CenterBento({
             <div className="h-9 p-0.5 rounded-full bg-white/85 border border-black/[0.08] flex items-center">
               {(
                 [
-                  { id: "7d", label: "7д" },
-                  { id: "30d", label: "Месяц" },
+                  { id: "7d", label: t.hero.days7 },
+                  { id: "30d", label: t.hero.month },
                 ] as const
               ).map((p) => (
                 <button
@@ -179,7 +183,7 @@ export function CenterBento({
               onClick={() => onOpenNewOrder("16:30")}
               className="h-9 px-4 rounded-full bg-[#141517] text-white text-[12px] font-bold inline-flex items-center gap-1.5 hover:opacity-90 cursor-pointer"
             >
-              <Plus className="w-4 h-4 text-[#E5BC73]" /> Новый заказ
+              <Plus className="w-4 h-4 text-[#E5BC73]" /> {t.hero.newOrder}
             </button>
           </div>
         </div>
@@ -188,7 +192,7 @@ export function CenterBento({
         <div className="grid grid-cols-1 xl:grid-cols-[1.05fr_1px_1fr_1.15fr] gap-4 items-center">
           <div>
             <div className="text-[12.5px] font-medium text-black/55">
-              Вторник · {jobs.length} заказа на сегодня
+              {t.hero.dayMeta(jobs.length)}
             </div>
             <div className="flex items-baseline gap-3 mt-1 flex-wrap">
               <h1 className="tma-display text-[46px] font-bold tracking-[-0.04em] leading-[0.95] text-[#141517]">
@@ -208,7 +212,7 @@ export function CenterBento({
                 {monthRevenueAmd.toLocaleString("ru-RU").replace(/,/g, " ")} ֏
               </div>
               <div className="text-[11px] text-black/55">
-                Заработок ({period === "30d" ? "Апрель" : "7 дней"}) ·{" "}
+                {t.hero.earningsLabel(period === "30d")} ·{" "}
                 <strong className="text-[#1F5753]">+38%</strong>
               </div>
             </div>
@@ -217,7 +221,7 @@ export function CenterBento({
                 11:30 · Kentron
               </div>
               <div className="text-[11px] text-black/55">
-                Ближайший выезд · 6 мин по OSRM
+                {t.hero.nextVisitLabel}
               </div>
             </div>
           </div>
@@ -227,7 +231,7 @@ export function CenterBento({
             <div className="rounded-[24px] bg-[#141517] text-white p-4 space-y-2.5 shadow-md">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[10.5px] font-bold uppercase tracking-wider text-[#E5BC73] inline-flex items-center gap-1">
-                  <ShieldAlert className="w-3.5 h-3.5" /> Что делать сейчас
+                  <ShieldAlert className="w-3.5 h-3.5" /> {t.hero.whatToDoNow}
                 </span>
                 <span className="tma-mono text-[10px] px-2 py-0.5 rounded-full bg-[#CCA2A9]/25 text-[#F2C6CE]">
                   HITL {urgentHitl.confidence}%
@@ -283,7 +287,7 @@ export function CenterBento({
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
           <div className="rounded-[20px] bg-white/85 px-3.5 py-2.5 flex items-center justify-between gap-2">
             <div>
-              <div className="text-[10px] font-semibold text-black/55">Спасённые лиды</div>
+              <div className="text-[10px] font-semibold text-black/55">{t.hero.savedLeads}</div>
               <div className="tma-display text-[16px] font-extrabold tabular-nums">
                 {savedLeads} <span className="text-[11px] font-bold text-[#1F5753]">+{Math.round(savedAmd / 1000)}k ֏</span>
               </div>
@@ -293,7 +297,7 @@ export function CenterBento({
 
           <div className="rounded-[20px] bg-white/85 px-3.5 py-2.5 flex items-center justify-between gap-2">
             <div>
-              <div className="text-[10px] font-semibold text-black/55">Точность AI vs Факт</div>
+              <div className="text-[10px] font-semibold text-black/55">{t.hero.quoteAccuracy}</div>
               <div className="tma-display text-[16px] font-extrabold tabular-nums">
                 ±8.4% <span className="text-[10.5px] font-semibold text-black/50">+{hitlLearnedCount + 12} HITL</span>
               </div>
@@ -307,7 +311,7 @@ export function CenterBento({
             className="text-left rounded-[20px] bg-white/85 hover:bg-white px-3.5 py-2.5 flex items-center justify-between gap-2 cursor-pointer transition-colors"
           >
             <div>
-              <div className="text-[10px] font-semibold text-black/55">Экономия OSRM</div>
+              <div className="text-[10px] font-semibold text-black/55">{t.hero.osrmSavings}</div>
               <div className="tma-display text-[16px] font-extrabold tabular-nums">
                 −48 мин/д <span className="text-[10.5px] font-semibold text-black/50">−14.2 км</span>
               </div>
@@ -319,7 +323,7 @@ export function CenterBento({
             <div>
               <div className="text-[10px] font-semibold text-[#E5BC73]">GDPR PII Shield</div>
               <div className="tma-display text-[16px] font-extrabold tabular-nums">
-                {piiRedactedCount} <span className="text-[10px] font-normal text-white/65">скрыто до LLM</span>
+                {piiRedactedCount} <span className="text-[10px] font-normal text-white/65">{t.hero.hiddenBeforeLlm}</span>
               </div>
             </div>
             <ShieldCheck className="w-4 h-4 text-[#A7CCC9] shrink-0" />
@@ -334,10 +338,10 @@ export function CenterBento({
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h2 className="tma-display text-[18px] font-extrabold tracking-tight">
-                  Заказы сегодня ({jobs.length})
+                  {t.hero.todayOrders(jobs.length)}
                 </h2>
                 <p className="text-[11.5px] text-black/55">
-                  Нажмите на любую карточку — откроется фото дефекта с Vision AI, справочник модели, чат и смета
+                  {t.hero.tapCardHint}
                 </p>
               </div>
               <div className="flex items-center gap-2 text-[11px] font-semibold text-black/60">
