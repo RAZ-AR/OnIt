@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: onit-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: WHATSAPP_VERIFY_TOKEN
+        generateValue: true

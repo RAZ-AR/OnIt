@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.next/
+apps/web/out/
+*.tsbuildinfo
+next-env.d.ts
+.turbo/
+.env
+.env.local
+.DS_Store
+.empryo/
+infra/pb_data/
+infra/osrm/data/
+coverage/
