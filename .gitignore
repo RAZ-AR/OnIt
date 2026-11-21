@@ -13,4 +13,6 @@ next-env.d.ts
 infra/pb_data/
 infra/osrm/data/
 coverage/
+playwright-report/
+test-results/
 .vercel
