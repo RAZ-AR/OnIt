@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+:root {
+  --font-plus-jakarta: "Plus Jakarta Sans", "Onest", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-onest: "Onest", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-inter: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-jetbrains-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
 @theme {
   --font-sans: var(--font-plus-jakarta), "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   --color-lime-hero: #D1F366;

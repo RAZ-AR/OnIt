@@ -1,34 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Onest, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin", "cyrillic-ext"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-plus-jakarta",
-  display: "swap",
-});
-
-const onest = Onest({
-  subsets: ["latin", "cyrillic"],
-  weight: ["500", "600", "700", "800", "900"],
-  variable: "--font-onest",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin", "cyrillic"],
-  weight: ["500", "600", "700"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "OnIt — Autonomous Multimodal AI Dispatcher",
@@ -40,10 +11,15 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="ru"
-      className={`${plusJakarta.variable} ${onest.variable} ${inter.variable} ${jetbrainsMono.variable}`}
-    >
+    <html lang="ru">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Onest:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="antialiased">{children}</body>
     </html>
   );
