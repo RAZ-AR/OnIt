@@ -15,9 +15,11 @@ import {
   Home,
   Plus,
   Sparkles,
+  User,
 } from "lucide-react";
 import { useOnItStore } from "../context/OnItStore";
 import type { DemoJob, NavTab } from "../data/demo-data";
+import { AccountSettingsView } from "./AccountSettingsView";
 import { AnalyticsHitlView } from "./AnalyticsHitlView";
 import { CenterBento } from "./CenterBento";
 import { NewOrderSheet } from "./NewOrderSheet";
@@ -189,6 +191,7 @@ export function OnItDashboard() {
     { id: "routes", label: "Маршрут", icon: Compass },
     { id: "pricing", label: "Прайс", icon: FileSpreadsheet },
     { id: "analytics", label: "HITL", icon: BarChart3 },
+    { id: "account", label: "Кабинет", icon: User },
   ];
 
   const activeIslandId: NavTab =
@@ -231,6 +234,8 @@ export function OnItDashboard() {
             onOpenImportPrice={() => setActiveTab("pricing")}
             onNavigate={handleSelectNav}
           />
+        ) : activeTab === "account" ? (
+          <AccountSettingsView onBack={() => setActiveTab("dispatch")} />
         ) : activeTab === "simulator" ? (
           <SimulatorSubView
             matrix={matrix}

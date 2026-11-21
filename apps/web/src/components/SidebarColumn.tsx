@@ -38,18 +38,18 @@ interface SidebarColumnProps {
 }
 
 const NAV_ITEMS: Array<{
-  id: NavTab | "calendar" | "settings";
+  id: NavTab | "team";
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   target: NavTab;
 }> = [
   { id: "dispatch", label: "Dispatch", icon: Home, target: "dispatch" },
+  { id: "calendar", label: "Calendar", icon: Calendar, target: "calendar" },
   { id: "simulator", label: "AI Simulator", icon: Sparkles, target: "simulator" },
   { id: "pricing", label: "Price Matrix", icon: FileSpreadsheet, target: "pricing" },
   { id: "routes", label: "Geo Routes", icon: Compass, target: "routes" },
   { id: "analytics", label: "Analytics", icon: BarChart3, target: "analytics" },
-  { id: "calendar", label: "Calendar", icon: Calendar, target: "routes" },
-  { id: "settings", label: "Team & HITL", icon: Users, target: "analytics" },
+  { id: "team", label: "Team & HITL", icon: Users, target: "analytics" },
 ];
 
 const QUICK_SAMPLE_PROMPTS = [
@@ -130,11 +130,15 @@ export function SidebarColumn({
           })}
           <button
             type="button"
-            onClick={() => onSelectTab("pricing")}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[13px] font-medium text-[#4D5259] hover:bg-[#F3F5F7] hover:text-[#111214] transition-all cursor-pointer"
+            onClick={() => onSelectTab("account")}
+            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
+              activeTab === "account"
+                ? "bg-[#111214] text-white shadow-[0_8px_20px_rgba(17,18,20,0.22)]"
+                : "text-[#4D5259] hover:bg-[#F3F5F7] hover:text-[#111214]"
+            }`}
           >
             <Settings className="w-4 h-4 shrink-0" />
-            <span className="truncate">Settings</span>
+            <span className="truncate">Кабинет</span>
           </button>
         </nav>
       </div>

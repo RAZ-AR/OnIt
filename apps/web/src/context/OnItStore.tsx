@@ -1,12 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   buildClientReviewRequest,
   OnItDispatcher,
   redactPii,
   RuleBasedTriageProvider,
   YEREVAN_HVAC_MATRIX,
+  type Currency,
   type LeadSession,
   type PriceMatrix,
   type SupportedLanguage,
@@ -37,11 +38,86 @@ export interface HitlLogEntry {
   timestamp: string;
 }
 
+export interface DaySchedule {
+  day: "Пн" | "Вт" | "Ср" | "Чт" | "Пт" | "Сб" | "Вс";
+  enabled: boolean;
+  start: string;
+  end: string;
+}
+
+export interface WorkspaceSettings {
+  companyName: string;
+  masterName: string;
+  masterPhone: string;
+  city: "Yerevan" | "Valencia" | "Tallinn";
+  timezone: string;
+  masterLanguage: "ru" | "hy" | "en" | "es";
+  clientLanguages: Array<"ru" | "hy" | "en" | "es">;
+  autoDetectVoiceLang: boolean;
+  assistantTone: "friendly" | "professional" | "concise";
+  afterHoursAutoReply: boolean;
+  bufferMinutes: number;
+  maxJobsPerDay: number;
+  maxTravelMinutes: number;
+  serviceZones: string[];
+  workingDays: DaySchedule[];
+  reminder2h: boolean;
+  review1h: boolean;
+  gdprPiiMasking: boolean;
+  llmRegion: "pilot_free" | "eu_vertex";
+  integrations: {
+    whatsapp: boolean;
+    telegram: boolean;
+    googleCalendar: boolean;
+    osrm: boolean;
+  };
+}
+
+export const DEFAULT_WORKSPACE_SETTINGS: WorkspaceSettings = {
+  companyName: "CoolAir Yerevan",
+  masterName: "Aram Petrosyan",
+  masterPhone: "+374 91 200-450",
+  city: "Yerevan",
+  timezone: "Asia/Yerevan (UTC+4)",
+  masterLanguage: "ru",
+  clientLanguages: ["hy", "ru", "en", "es"],
+  autoDetectVoiceLang: true,
+  assistantTone: "friendly",
+  afterHoursAutoReply: true,
+  bufferMinutes: 15,
+  maxJobsPerDay: 6,
+  maxTravelMinutes: 25,
+  serviceZones: ["Kentron", "Arabkir", "Avan"],
+  workingDays: [
+    { day: "Пн", enabled: true, start: "09:00", end: "19:00" },
+    { day: "Вт", enabled: true, start: "09:00", end: "19:00" },
+    { day: "Ср", enabled: true, start: "09:00", end: "19:00" },
+    { day: "Чт", enabled: true, start: "09:00", end: "19:00" },
+    { day: "Пт", enabled: true, start: "09:00", end: "19:00" },
+    { day: "Сб", enabled: true, start: "10:00", end: "17:00" },
+    { day: "Вс", enabled: false, start: "10:00", end: "16:00" },
+  ],
+  reminder2h: true,
+  review1h: true,
+  gdprPiiMasking: true,
+  llmRegion: "pilot_free",
+  integrations: {
+    whatsapp: true,
+    telegram: true,
+    googleCalendar: true,
+    osrm: true,
+  },
+};
+
 interface OnItStoreValue {
   surface: SurfaceMode;
   setSurface: (s: SurfaceMode) => void;
   matrix: PriceMatrix;
   setMatrix: (m: PriceMatrix) => void;
+  settings: WorkspaceSettings;
+  updateSettings: (patch: Partial<WorkspaceSettings>) => void;
+  updateCurrency: (currency: Currency) => void;
+  updateCalloutPolicy: (patch: Partial<PriceMatrix["callout"]>) => void;
   jobs: DemoJob[];
   addJob: (job: DemoJob) => void;
   acceptJob: (jobId: string) => void;
@@ -112,6 +188,7 @@ export function OnItStoreProvider({
 }) {
   const [surface, setSurface] = useState<SurfaceMode>(initialSurface);
   const [matrix, setMatrix] = useState<PriceMatrix>(YEREVAN_HVAC_MATRIX);
+  const [settings, setSettings] = useState<WorkspaceSettings>(DEFAULT_WORKSPACE_SETTINGS);
   const [jobs, setJobs] = useState<DemoJob[]>(INITIAL_JOBS);
   const [clientChat, setClientChat] = useState<ClientChatEntry[]>(INITIAL_CLIENT_CHAT);
   const [hitlLogs, setHitlLogs] = useState<HitlLogEntry[]>(INITIAL_HITL);
@@ -120,12 +197,54 @@ export function OnItStoreProvider({
   const [activeSession, setActiveSession] = useState<LeadSession>({
     leadId: "wa_live_1",
     companyId: YEREVAN_HVAC_MATRIX.companyId,
-    companyName: "CoolAir Yerevan",
+    companyName: DEFAULT_WORKSPACE_SETTINGS.companyName,
     state: "new",
     clientName: "Ani (WhatsApp)",
     collectedAttributes: {},
     transcriptHistory: [],
   });
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("onit_workspace_settings_v1");
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<WorkspaceSettings>;
+        setSettings((prev) => ({ ...prev, ...parsed }));
+      }
+    } catch {
+      // Ignore storage errors in sandboxed/private contexts
+    }
+  }, []);
+
+  const updateSettings = (patch: Partial<WorkspaceSettings>) => {
+    setSettings((prev) => {
+      const next = { ...prev, ...patch };
+      try {
+        window.localStorage.setItem("onit_workspace_settings_v1", JSON.stringify(next));
+      } catch {
+        // Ignore storage errors
+      }
+      if (patch.companyName && patch.companyName !== prev.companyName) {
+        setActiveSession((s) => ({ ...s, companyName: patch.companyName! }));
+      }
+      return next;
+    });
+  };
+
+  const updateCurrency = (currency: Currency) => {
+    setMatrix((prev) => ({
+      ...prev,
+      currency,
+      roundingStep: currency === "AMD" ? 500 : 5,
+    }));
+  };
+
+  const updateCalloutPolicy = (patch: Partial<PriceMatrix["callout"]>) => {
+    setMatrix((prev) => ({
+      ...prev,
+      callout: { ...prev.callout, ...patch },
+    }));
+  };
 
   const notify = (msg: string) => {
     setToast(msg);
@@ -455,6 +574,10 @@ export function OnItStoreProvider({
         setSurface,
         matrix,
         setMatrix,
+        settings,
+        updateSettings,
+        updateCurrency,
+        updateCalloutPolicy,
         jobs,
         addJob,
         acceptJob,

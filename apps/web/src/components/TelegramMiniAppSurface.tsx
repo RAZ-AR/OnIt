@@ -46,6 +46,7 @@ import {
   type CardTone,
   type DemoJob,
 } from "../data/demo-data";
+import { AccountSettingsView } from "./AccountSettingsView";
 import { AvatarCircle } from "./Avatars";
 import { DefectPhotoCard } from "./DefectPhotoCard";
 import { NewOrderSheet } from "./NewOrderSheet";
@@ -98,6 +99,7 @@ export function TelegramMiniAppSurface({
   const [adjNote, setAdjNote] = useState("Сможем приехать в пятницу утром.");
   const [voiceRecording, setVoiceRecording] = useState(false);
 
+  const [accountSubTab, setAccountSubTab] = useState<"settings" | "price">("settings");
   const [priceSheetOpen, setPriceSheetOpen] = useState(false);
   const [priceDraft, setPriceDraft] = useState(
     "Заправка фреоном | 12000-15000 AMD | 45 мин\nЧистка дренажа | 6000-7000 AMD | 30 мин\nПолная профилактика | 15000-18000 AMD | 60 мин\nДиагностика: 5000 AMD"
@@ -905,9 +907,38 @@ export function TelegramMiniAppSurface({
             </div>
           )}
 
-          {/* SCREEN 4: PRICE MATRIX & REFERENCE CATALOGS */}
+          {/* SCREEN 4: ACCOUNT SETTINGS & PRICE MATRIX */}
           {tab === "pricing" && (
-            <div className="flex-1 rounded-t-[34px] bg-white px-4 pt-5 pb-24 space-y-3.5 mt-2">
+            <div className="flex-1 rounded-t-[34px] bg-white px-4 pt-4 pb-24 space-y-3.5 mt-2">
+              <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-[#F4F5F1]">
+                <button
+                  type="button"
+                  onClick={() => setAccountSubTab("settings")}
+                  className={`py-2 rounded-full text-[11.5px] font-bold transition-all cursor-pointer ${
+                    accountSubTab === "settings"
+                      ? "bg-[#141517] text-white"
+                      : "text-black/65"
+                  }`}
+                >
+                  Кабинет и график
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAccountSubTab("price")}
+                  className={`py-2 rounded-full text-[11.5px] font-bold transition-all cursor-pointer ${
+                    accountSubTab === "price"
+                      ? "bg-[#141517] text-white"
+                      : "text-black/65"
+                  }`}
+                >
+                  Прайс и справочники
+                </button>
+              </div>
+
+              {accountSubTab === "settings" ? (
+                <AccountSettingsView compact />
+              ) : (
+                <>
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="rounded-[22px] bg-[#E5BC73] p-3.5 text-[#1E1A14]">
                   <div className="text-[10.5px] font-bold opacity-70">Справочник моделей</div>
@@ -973,6 +1004,8 @@ export function TelegramMiniAppSurface({
                   </div>
                 ))}
               </div>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -990,7 +1023,7 @@ export function TelegramMiniAppSurface({
                 { id: "today", label: "Сегодня", icon: Home, dot: false },
                 { id: "calendar", label: "Календарь", icon: Calendar, dot: false },
                 { id: "flows", label: "AI Флоу", icon: GitBranch, dot: hitlPending > 0 },
-                { id: "pricing", label: "Прайс", icon: Wallet, dot: false },
+                { id: "pricing", label: "Кабинет", icon: Wallet, dot: false },
               ] as const
             ).map((item) => {
               const Icon = item.icon;

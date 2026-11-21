@@ -6,7 +6,8 @@ export type NavTab =
   | "simulator"
   | "pricing"
   | "routes"
-  | "analytics";
+  | "analytics"
+  | "account";
 
 export type DefectPhotoKind =
   | "frost_pipe"
