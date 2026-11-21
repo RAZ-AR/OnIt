@@ -124,6 +124,13 @@ interface OnItStoreValue {
   takeoverJob: (jobId: string) => void;
   completeJob: (jobId: string) => void;
   adjustJobQuote: (jobId: string, priceMin: number, priceMax: number, note: string) => void;
+  sendInvoiceToClient: (params: {
+    jobId: string;
+    invoiceNumber: string;
+    total: number;
+    currency: string;
+    summaryText: string;
+  }) => void;
   sendMasterReply: (jobId: string, text: string) => void;
   updateConfidenceThreshold: (threshold: number) => void;
   clientChat: ClientChatEntry[];
@@ -567,6 +574,50 @@ export function OnItStoreProvider({
     notify("Диалог клиента сброшен для нового сценария");
   };
 
+  const sendInvoiceToClient: OnItStoreValue["sendInvoiceToClient"] = ({
+    jobId,
+    invoiceNumber,
+    total,
+    currency,
+    summaryText,
+  }) => {
+    const formatted = `${total.toLocaleString("en-US").replace(/,/g, " ")} ${currency}`;
+    setJobs((prev) =>
+      prev.map((j) =>
+        j.id === jobId
+          ? {
+              ...j,
+              priceRange: formatted,
+              subtitle: `Инвойс ${invoiceNumber} · ${formatted}`,
+              status: "booked",
+            }
+          : j
+      )
+    );
+    setClientChat((prev) => [
+      ...prev,
+      {
+        id: `inv_${Date.now()}`,
+        sender: "onit",
+        kind: "text",
+        text: summaryText,
+        time: nowHm(),
+      },
+    ]);
+    setHitlLogs((prev) => [
+      {
+        id: `h_${Date.now()}`,
+        leadId: jobId,
+        summary: `Отправлен инвойс ${invoiceNumber} клиенту`,
+        action: "completed",
+        priceLabel: formatted,
+        timestamp: nowHm(),
+      },
+      ...prev,
+    ]);
+    notify(`Инвойс ${invoiceNumber} (${formatted}) отправлен клиенту в WhatsApp`);
+  };
+
   return (
     <OnItStoreContext.Provider
       value={{
@@ -584,6 +635,7 @@ export function OnItStoreProvider({
         takeoverJob,
         completeJob,
         adjustJobQuote,
+        sendInvoiceToClient,
         sendMasterReply,
         updateConfidenceThreshold,
         clientChat,

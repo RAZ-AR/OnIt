@@ -483,10 +483,12 @@ export function JobControlModal({
   job,
   onClose,
   onAction,
+  onOpenInvoice,
 }: {
   job: DemoJob;
   onClose: () => void;
   onAction: (jobId: string, action: "accept" | "takeover" | "complete" | "price40k") => void;
+  onOpenInvoice?: (job: DemoJob) => void;
 }) {
   const nav = buildNavigatorUrls(job.location);
   const equip = getEquipmentById(job.equipmentModelId);
@@ -605,6 +607,16 @@ export function JobControlModal({
             {job.status === "hitl" ? "⚡ Оценить 40k AMD" : "🏁 Закрыть → Отзыв"}
           </button>
         </div>
+
+        {onOpenInvoice && (
+          <button
+            type="button"
+            onClick={() => onOpenInvoice(job)}
+            className="w-full py-2.5 rounded-full bg-[#BEB7D4] text-[#1B1726] text-[12px] font-extrabold cursor-pointer hover:brightness-95"
+          >
+            🧾 Выставить инвойс клиенту (скидка / надбавка)
+          </button>
+        )}
 
         <button
           type="button"

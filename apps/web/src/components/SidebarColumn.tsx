@@ -43,13 +43,13 @@ const NAV_ITEMS: Array<{
   icon: React.ComponentType<{ className?: string }>;
   target: NavTab;
 }> = [
-  { id: "dispatch", label: "Dispatch", icon: Home, target: "dispatch" },
-  { id: "calendar", label: "Calendar", icon: Calendar, target: "calendar" },
-  { id: "simulator", label: "AI Simulator", icon: Sparkles, target: "simulator" },
-  { id: "pricing", label: "Price Matrix", icon: FileSpreadsheet, target: "pricing" },
-  { id: "routes", label: "Geo Routes", icon: Compass, target: "routes" },
-  { id: "analytics", label: "Analytics", icon: BarChart3, target: "analytics" },
-  { id: "team", label: "Team & HITL", icon: Users, target: "analytics" },
+  { id: "dispatch", label: "Сегодня", icon: Home, target: "dispatch" },
+  { id: "calendar", label: "Календарь", icon: Calendar, target: "calendar" },
+  { id: "simulator", label: "AI Симулятор", icon: Sparkles, target: "simulator" },
+  { id: "pricing", label: "Меню услуг", icon: FileSpreadsheet, target: "pricing" },
+  { id: "routes", label: "Маршруты", icon: Compass, target: "routes" },
+  { id: "analytics", label: "Аналитика", icon: BarChart3, target: "analytics" },
+  { id: "team", label: "Команда и HITL", icon: Users, target: "analytics" },
 ];
 
 const QUICK_SAMPLE_PROMPTS = [

@@ -135,7 +135,7 @@ export function AccountSettingsView({
   const activeDaysCount = settings.workingDays.filter((d) => d.enabled).length;
 
   return (
-    <main className={`flex flex-col gap-4 min-w-0 ${compact ? "" : "pb-20"}`}>
+    <main className="flex flex-col gap-4 min-w-0">
       {/* Warm Stone Editorial Account Header */}
       <section className="rounded-[28px] bg-[#E7E8E3] border border-black/[0.06] p-4 sm:p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">

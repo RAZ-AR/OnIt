@@ -121,7 +121,7 @@ export function CenterBento({
   const codeRedactions = piiRedactedCount - phoneRedactions;
 
   return (
-    <main className="flex flex-col gap-4 min-w-0 pb-20">
+    <main className="flex flex-col gap-4 min-w-0">
       {/* EDITORIAL WARM-STONE HERO SHELL (sajon.co geometry adapted for desktop!) */}
       <section className="rounded-[30px] bg-[#E7E8E3] border border-black/[0.06] p-5 space-y-5">
         {/* Top Row: Today / Calendar Pills + Period + New Order */}

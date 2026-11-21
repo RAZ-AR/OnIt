@@ -49,6 +49,8 @@ import {
 import { AccountSettingsView } from "./AccountSettingsView";
 import { AvatarCircle } from "./Avatars";
 import { DefectPhotoCard } from "./DefectPhotoCard";
+import { InvoiceSheet } from "./InvoiceSheet";
+import { MenuBuilderView } from "./MenuBuilderView";
 import { NewOrderSheet } from "./NewOrderSheet";
 
 type TmaTab = "today" | "calendar" | "flows" | "pricing";
@@ -93,6 +95,7 @@ export function TelegramMiniAppSurface({
 
   // Sheets
   const [newOrderSlot, setNewOrderSlot] = useState<string | null>(null);
+  const [invoiceJob, setInvoiceJob] = useState<DemoJob | null>(null);
   const [quoteSheetJob, setQuoteSheetJob] = useState<DemoJob | null>(null);
   const [adjMin, setAdjMin] = useState(38000);
   const [adjMax, setAdjMax] = useState(42000);
@@ -482,13 +485,22 @@ export function TelegramMiniAppSurface({
                     </div>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => openQuoteSheet(openJob)}
-                  className="w-full py-3 rounded-full bg-[#141517] text-white text-[12.5px] font-bold cursor-pointer"
-                >
-                  ✏️ Изменить цену или наговорить голосом
-                </button>
+                <div className="grid grid-cols-1 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setInvoiceJob(openJob)}
+                    className="w-full py-3 rounded-full bg-[#E5BC73] text-[#1E1A14] text-[12.5px] font-extrabold cursor-pointer"
+                  >
+                    🧾 Выставить инвойс (скидка / надбавка)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openQuoteSheet(openJob)}
+                    className="w-full py-3 rounded-full bg-[#141517] text-white text-[12.5px] font-bold cursor-pointer"
+                  >
+                    ✏️ Изменить цену или наговорить голосом
+                  </button>
+                </div>
               </div>
             )}
 
@@ -931,80 +943,18 @@ export function TelegramMiniAppSurface({
                       : "text-black/65"
                   }`}
                 >
-                  Прайс и справочники
+                  Меню услуг
                 </button>
               </div>
 
               {accountSubTab === "settings" ? (
                 <AccountSettingsView compact />
               ) : (
-                <>
-              <div className="grid grid-cols-2 gap-2.5">
-                <div className="rounded-[22px] bg-[#E5BC73] p-3.5 text-[#1E1A14]">
-                  <div className="text-[10.5px] font-bold opacity-70">Справочник моделей</div>
-                  <div className="tma-display text-[22px] font-black mt-0.5">
-                    {EQUIPMENT_MODELS.length} шт
-                  </div>
-                  <div className="text-[10.5px] opacity-75">LG, Daikin, Midea, Gree…</div>
-                </div>
-                <div className="rounded-[22px] bg-[#A7CCC9] p-3.5 text-[#122423]">
-                  <div className="text-[10.5px] font-bold opacity-70">Улицы Еревана</div>
-                  <div className="tma-display text-[22px] font-black mt-0.5">
-                    {YEREVAN_STREETS.length} ул.
-                  </div>
-                  <div className="text-[10.5px] opacity-75">HY / RU / EN + GPS</div>
-                </div>
-              </div>
-
-              <div className="rounded-[22px] bg-[#F4F5F1] p-3.5 space-y-2">
-                <div className="text-[12px] font-extrabold">Зоны выезда</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {["Kentron", "Arabkir", "Avan", "Erebuni", "Davtashen"].map((z) => {
-                    const active = zones.includes(z);
-                    return (
-                      <button
-                        key={z}
-                        type="button"
-                        onClick={() => toggleZone(z)}
-                        className={`px-3 py-1 rounded-full text-[11px] font-bold cursor-pointer ${
-                          active ? "bg-[#141517] text-white" : "bg-white text-black/65"
-                        }`}
-                      >
-                        {active ? "✓ " : ""}
-                        {z}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="rounded-[22px] bg-[#F4F5F1] p-3.5 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[12.5px] font-extrabold">
-                    Прайс-матрица ({matrix.services.length})
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setPriceSheetOpen(true)}
-                    className="px-3 py-1 rounded-full bg-[#141517] text-[#E5BC73] text-[11px] font-bold cursor-pointer"
-                  >
-                    + Импорт
-                  </button>
-                </div>
-                {matrix.services.map((s) => (
-                  <div
-                    key={s.code}
-                    className="rounded-xl bg-white px-3 py-2 flex items-center justify-between gap-2 text-[11.5px]"
-                  >
-                    <span className="font-bold truncate">{s.name}</span>
-                    <span className="tma-mono font-bold shrink-0">
-                      {s.priceMin === s.priceMax ? s.priceMin : `${s.priceMin}–${s.priceMax}`}{" "}
-                      {matrix.currency}
-                    </span>
-                  </div>
-                ))}
-              </div>
-                </>
+                <MenuBuilderView
+                  matrix={matrix}
+                  onApplyMatrix={setMatrix}
+                  compact
+                />
               )}
             </div>
           )}
@@ -1159,6 +1109,14 @@ export function TelegramMiniAppSurface({
             </button>
           </div>
         </div>
+      )}
+
+      {/* INVOICE SHEET */}
+      {invoiceJob && (
+        <InvoiceSheet
+          job={invoiceJob}
+          onClose={() => setInvoiceJob(null)}
+        />
       )}
 
       {/* NEW ORDER SHEET (Streets + Equipment Models Catalogs) */}

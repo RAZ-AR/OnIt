@@ -7,28 +7,19 @@ import {
   RuleBasedTriageProvider,
   type LeadSession,
 } from "@onit/core";
-import {
-  BarChart3,
-  Calendar,
-  Compass,
-  FileSpreadsheet,
-  Home,
-  Plus,
-  Sparkles,
-  User,
-} from "lucide-react";
 import { useOnItStore } from "../context/OnItStore";
 import type { DemoJob, NavTab } from "../data/demo-data";
 import { AccountSettingsView } from "./AccountSettingsView";
 import { AnalyticsHitlView } from "./AnalyticsHitlView";
 import { CenterBento } from "./CenterBento";
+import { InvoiceSheet } from "./InvoiceSheet";
+import { MenuBuilderView } from "./MenuBuilderView";
 import { NewOrderSheet } from "./NewOrderSheet";
 import { RightRail } from "./RightRail";
 import { SidebarColumn, type ChatBubble } from "./SidebarColumn";
 import {
   GeoRoutesSubView,
   JobControlModal,
-  PriceMatrixSubView,
   SimulatorSubView,
 } from "./SubViews";
 
@@ -59,6 +50,7 @@ export function OnItDashboard() {
   const {
     matrix,
     setMatrix,
+    settings,
     jobs,
     addJob,
     acceptJob,
@@ -75,6 +67,7 @@ export function OnItDashboard() {
   const [activeTab, setActiveTab] = useState<NavTab>("dispatch");
   const [viewMode, setViewMode] = useState<"today" | "calendar">("today");
   const [selectedJob, setSelectedJob] = useState<DemoJob | null>(null);
+  const [invoiceJob, setInvoiceJob] = useState<DemoJob | null>(null);
   const [newOrderSlot, setNewOrderSlot] = useState<string | null>(null);
   const [autoPilot, setAutoPilot] = useState(true);
   const [chatMessages, setChatMessages] = useState<ChatBubble[]>(INITIAL_CHAT);
@@ -109,7 +102,7 @@ export function OnItDashboard() {
     const session: LeadSession = {
       leadId: `chat_${Date.now().toString().slice(-4)}`,
       companyId: matrix.companyId,
-      companyName: "CoolAir Yerevan",
+      companyName: settings.companyName,
       state: "new",
       collectedAttributes: {},
       transcriptHistory: [],
@@ -179,29 +172,14 @@ export function OnItDashboard() {
 
   const autoQuotedCount = jobs.filter((j) => j.status !== "hitl").length + 42;
   const hitlCount = jobs.filter((j) => j.status === "hitl").length;
-
-  const islandItems: Array<{
-    id: NavTab;
-    label: string;
-    icon: React.ComponentType<{ className?: string }>;
-  }> = [
-    { id: "dispatch", label: "Сегодня", icon: Home },
-    { id: "calendar", label: "Календарь", icon: Calendar },
-    { id: "simulator", label: "AI Чат", icon: Sparkles },
-    { id: "routes", label: "Маршрут", icon: Compass },
-    { id: "pricing", label: "Прайс", icon: FileSpreadsheet },
-    { id: "analytics", label: "HITL", icon: BarChart3 },
-    { id: "account", label: "Кабинет", icon: User },
-  ];
-
-  const activeIslandId: NavTab =
+  const activeSidebarTab: NavTab =
     activeTab === "dispatch" && viewMode === "calendar" ? "calendar" : activeTab;
 
   return (
     <>
       <div className="w-full max-w-[1380px] rounded-[34px] bg-white/60 backdrop-blur-2xl border border-white/80 shadow-[0_32px_90px_rgba(20,21,23,0.10)] p-3.5 sm:p-4 lg:p-5 grid grid-cols-1 lg:grid-cols-[216px_1fr_308px] gap-4 items-stretch">
         <SidebarColumn
-          activeTab={activeIslandId}
+          activeTab={activeSidebarTab}
           onSelectTab={handleSelectNav}
           chatMessages={chatMessages}
           unreadCount={unreadCount}
@@ -243,7 +221,7 @@ export function OnItDashboard() {
             onAddJob={addJob}
           />
         ) : activeTab === "pricing" ? (
-          <PriceMatrixSubView
+          <MenuBuilderView
             matrix={matrix}
             onApplyMatrix={setMatrix}
             onBack={() => setActiveTab("dispatch")}
@@ -261,56 +239,22 @@ export function OnItDashboard() {
         />
       </div>
 
-      {/* FLOATING iOS ISLAND DOCK FOR WEB */}
-      <div className="fixed bottom-4 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
-        <nav
-          aria-label="OnIt iOS Island Dock"
-          className="pointer-events-auto rounded-full bg-[#141517]/94 backdrop-blur-2xl px-2 py-2 flex items-center gap-1 shadow-[0_20px_48px_rgba(20,21,23,0.34)] border border-white/12"
-        >
-          {islandItems.map((item) => {
-            const Icon = item.icon;
-            const active = activeIslandId === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => handleSelectNav(item.id)}
-                className={`relative h-10 rounded-full flex items-center justify-center gap-1.5 text-[12px] font-bold transition-all cursor-pointer ${
-                  active
-                    ? "bg-white text-[#141517] px-4 shadow-sm"
-                    : "w-10 sm:w-auto sm:px-3 text-white/75 hover:text-white hover:bg-white/10"
-                }`}
-                aria-label={item.label}
-              >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span className={active ? "inline" : "hidden sm:inline"}>
-                  {item.label}
-                </span>
-                {item.id === "analytics" && hitlCount > 0 && !active && (
-                  <span className="w-2 h-2 rounded-full bg-[#E5BC73]" />
-                )}
-              </button>
-            );
-          })}
-
-          <div className="w-px h-5 bg-white/15 mx-0.5" />
-
-          <button
-            type="button"
-            onClick={() => setNewOrderSlot("16:30")}
-            aria-label="Create new order"
-            className="w-10 h-10 rounded-full bg-[#E5BC73] text-[#1E1A14] flex items-center justify-center hover:brightness-95 transition-all cursor-pointer"
-          >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-          </button>
-        </nav>
-      </div>
-
       {selectedJob && (
         <JobControlModal
           job={selectedJob}
           onClose={() => setSelectedJob(null)}
           onAction={handleJobAction}
+          onOpenInvoice={(job) => {
+            setSelectedJob(null);
+            setInvoiceJob(job);
+          }}
+        />
+      )}
+
+      {invoiceJob && (
+        <InvoiceSheet
+          job={invoiceJob}
+          onClose={() => setInvoiceJob(null)}
         />
       )}
 
